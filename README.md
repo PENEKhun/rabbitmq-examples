@@ -1,5 +1,15 @@
 # 메세지큐를 직접 써볼거임.
 
+1. RabbitMQ
+
+```bash
+docker run -d --name rabbitmq \
+  -p 5672:5672 -p 15672:15672 \
+  -e RABBITMQ_DEFAULT_USER=guest \
+  -e RABBITMQ_DEFAULT_PASS=guest \
+  rabbitmq:3-management
+```
+
 ## 만드려는 것 : 회원가입
 
 - 회원가입에 성공하면,

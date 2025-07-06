@@ -2,19 +2,19 @@ package kr.huni.signup.service;
 
 import jakarta.transaction.Transactional;
 import kr.huni.signup.domain.User;
-import kr.huni.signup.domain.UserCoupon;
 import kr.huni.signup.repository.UserRepository;
 import kr.huni.signup.request.SignupRequest;
 import kr.huni.signup.response.SignupResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class SignupService {
     private final UserRepository userRepository;
-    private final EmailService emailService;
-    private final CouponService couponService;
+    private final EventPublisherService eventPublisherService;
 
     @Transactional
     public SignupResponse signup(SignupRequest signupRequest) {
@@ -41,11 +41,13 @@ public class SignupService {
         User createdUser = User.create(signupRequest);
         userRepository.save(createdUser);
 
-        // 회원가입 축하 메일 전송
-        emailService.sendWelcomeEmail(createdUser);
+        // 회원가입 축하 메일 이벤트 발행
+        log.info("Publishing welcome email event for user: {}", createdUser.getUsername());
+        eventPublisherService.publishWelcomeEmailEvent(createdUser);
 
-        // 회원가입 쿠폰 발행
-        UserCoupon issuedCoupon = couponService.issueWelcomeCoupon(createdUser);
+        // 회원가입 쿠폰 발행 이벤트 발행
+        log.info("Publishing welcome coupon event for user: {}", createdUser.getUsername());
+        eventPublisherService.publishWelcomeCouponEvent(createdUser);
 
         return SignupResponse.builder()
                 .username(createdUser.getUsername())
