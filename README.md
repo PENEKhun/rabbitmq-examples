@@ -10,6 +10,12 @@ docker run -d --name rabbitmq \
   rabbitmq:3-management
 ```
 
+## TODO
+
+- Outbox
+  - Outbox 패턴을 적용해서, 트랜잭션이 성공하면 메시지를 발행하는 구조로 만들기
+  - (별도의 테이블을 만들어서, 메시지를 저장하고, CDC로 RabbitMQ로 발행하는 구조)
+
 ## 만드려는 것 : 회원가입
 
 - 회원가입에 성공하면,
