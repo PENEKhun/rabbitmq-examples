@@ -1,0 +1,11 @@
+### 회원가입 요청 예시
+POST http://localhost:8080/signup
+Content-Type: application/json
+
+{
+  "fullName": "홍길동",
+  "username": "hong123",
+  "password": "securePassword123!",
+  "email": "hong@example.com",
+  "phoneNumber": "010-1234-5678"
+}
