@@ -1,6 +1,7 @@
 package kr.huni.signup.domain;
 
 import jakarta.persistence.*;
+import kr.huni.signup.request.SignupRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,4 +47,14 @@ public class User {
 
     @Column(nullable = false)
     private Boolean active;
+
+    public static User create(SignupRequest signupRequest) {
+        return User.builder()
+                .username(signupRequest.username())
+                .email(signupRequest.email())
+                .password(signupRequest.password()) // TODO: 비밀번호 암호화 로직은 그냥 생략함
+                .fullName(signupRequest.fullName())
+                .active(true) // 기본값으로 활성화 상태 설정
+                .build();
+    }
 }
