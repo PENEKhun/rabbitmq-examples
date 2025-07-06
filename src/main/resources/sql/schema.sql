@@ -6,6 +6,7 @@ CREATE TABLE users
     email      VARCHAR(100) NOT NULL UNIQUE,
     password   VARCHAR(100) NOT NULL,
     full_name  VARCHAR(100),
+    phone_number VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     active     BOOLEAN   DEFAULT TRUE
@@ -18,7 +19,7 @@ CREATE TABLE email_notifications
     user_id    BIGINT       NOT NULL,
     email_type VARCHAR(50)  NOT NULL,
     subject    VARCHAR(200) NOT NULL,
-    content    TEXT,
+    content    CLOB,
     sent_at    TIMESTAMP,
     status     VARCHAR(20) DEFAULT 'PENDING',
     FOREIGN KEY (user_id) REFERENCES users (id)
@@ -69,7 +70,7 @@ CREATE TABLE message_queue_events
 (
     id           BIGINT AUTO_INCREMENT PRIMARY KEY,
     event_type   VARCHAR(50) NOT NULL,
-    payload      TEXT        NOT NULL,
+    payload      CLOB        NOT NULL,
     status       VARCHAR(20) DEFAULT 'PENDING',
     created_at   TIMESTAMP   DEFAULT CURRENT_TIMESTAMP,
     processed_at TIMESTAMP,

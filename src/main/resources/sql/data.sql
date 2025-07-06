@@ -1,11 +1,11 @@
 -- Sample users
-INSERT INTO users (username, email, password, full_name, created_at, active)
+INSERT INTO users (username, email, password, phone_number, full_name, created_at, active)
 VALUES
-    ('user1', 'user1@example.com', '...', 'User One', DATEADD('DAY', -30, CURRENT_TIMESTAMP), true),
-    ('user2', 'user2@example.com', '...', 'User Two', DATEADD('DAY', -25, CURRENT_TIMESTAMP), true),
-    ('user3', 'user3@example.com', '...', 'User Three', DATEADD('DAY', -20, CURRENT_TIMESTAMP), true),
-    ('user4', 'user4@example.com', '...', 'User Four', DATEADD('DAY', -15, CURRENT_TIMESTAMP), true),
-    ('user5', 'user5@example.com', '...', 'User Five', DATEADD('DAY', -10, CURRENT_TIMESTAMP), true);
+    ('user1', 'user1@example.com', '...', '010-1234-1234', 'User One', DATEADD('DAY', -30, CURRENT_TIMESTAMP), true),
+    ('user2', 'user2@example.com', '...', '010-1234-1235', 'User Two', DATEADD('DAY', -25, CURRENT_TIMESTAMP), true),
+    ('user3', 'user3@example.com', '...', '010-1234-1236', 'User Three', DATEADD('DAY', -20, CURRENT_TIMESTAMP), true),
+    ('user4', 'user4@example.com', '...', '010-1234-1237', 'User Four', DATEADD('DAY', -15, CURRENT_TIMESTAMP), true),
+    ('user5', 'user5@example.com', '...', '010-1234-1238', 'User Five', DATEADD('DAY', -10, CURRENT_TIMESTAMP), true);
 
 -- Sample email notifications
 INSERT INTO email_notifications (user_id, email_type, subject, content, sent_at, status)
