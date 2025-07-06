@@ -2,6 +2,7 @@ package kr.huni.signup.service;
 
 import jakarta.transaction.Transactional;
 import kr.huni.signup.domain.User;
+import kr.huni.signup.domain.UserCoupon;
 import kr.huni.signup.repository.UserRepository;
 import kr.huni.signup.request.SignupRequest;
 import kr.huni.signup.response.SignupResponse;
@@ -12,13 +13,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SignupService {
     private final UserRepository userRepository;
+    private final EmailService emailService;
+    private final CouponService couponService;
 
     @Transactional
     public SignupResponse signup(SignupRequest signupRequest) {
         if (signupRequest.username().length() > 20 || signupRequest.username().length() < 3) {
             throw new IllegalArgumentException("Username must be between 3 and 20 characters.");
         }
-        
+
         if (signupRequest.password().length() < 8) {
             throw new IllegalArgumentException("Password must be at least 8 characters long.");
         }
@@ -37,6 +40,12 @@ public class SignupService {
 
         User createdUser = User.create(signupRequest);
         userRepository.save(createdUser);
+
+        // 회원가입 축하 메일 전송
+        emailService.sendWelcomeEmail(createdUser);
+
+        // 회원가입 쿠폰 발행
+        UserCoupon issuedCoupon = couponService.issueWelcomeCoupon(createdUser);
 
         return SignupResponse.builder()
                 .username(createdUser.getUsername())
