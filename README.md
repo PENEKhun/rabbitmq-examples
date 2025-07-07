@@ -1,13 +1,11 @@
 # 메세지큐를 직접 써볼거임.
 
-1. RabbitMQ
+1. MySQL + Kafka
+
+> Debezium은 H2 데이터베이스와 RabbitMQ를 지원하지 않음...
 
 ```bash
-docker run -d --name rabbitmq \
-  -p 5672:5672 -p 15672:15672 \
-  -e RABBITMQ_DEFAULT_USER=guest \
-  -e RABBITMQ_DEFAULT_PASS=guest \
-  rabbitmq:3-management
+docker compose up -d
 ```
 
 ## TODO

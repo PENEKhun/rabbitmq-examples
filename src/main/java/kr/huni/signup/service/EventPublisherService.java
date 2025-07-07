@@ -1,17 +1,16 @@
 package kr.huni.signup.service;
 
-import kr.huni.signup.config.RabbitMQConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.huni.signup.domain.MessageQueueEvent;
 import kr.huni.signup.domain.User;
 import kr.huni.signup.event.SignupEvent;
 import kr.huni.signup.repository.MessageQueueEventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 
 @Service
@@ -19,71 +18,46 @@ import java.time.LocalDateTime;
 @Slf4j
 public class EventPublisherService {
 
-    private final RabbitTemplate rabbitTemplate;
     private final MessageQueueEventRepository messageQueueEventRepository;
+    private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
+
+    private static final String WELCOME_EMAIL_TOPIC = "welcome-email";
+    private static final String WELCOME_COUPON_TOPIC = "welcome-coupon";
 
     @Transactional
     public void publishWelcomeEmailEvent(User user) {
-        try {
-            SignupEvent event = createSignupEvent(user);
-            String payload = objectMapper.writeValueAsString(event);
-
-            // Save event to database
-            MessageQueueEvent messageQueueEvent = MessageQueueEvent.builder()
-                    .eventType("WELCOME_EMAIL")
-                    .payload(payload)
-                    .status("PUBLISHED")
-                    .createdAt(LocalDateTime.now())
-                    .retryCount(0)
-                    .maxRetries(3)
-                    .build();
-
-            messageQueueEventRepository.save(messageQueueEvent);
-
-            // Publish event to RabbitMQ
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.SIGNUP_EXCHANGE,
-                    RabbitMQConfig.WELCOME_EMAIL_ROUTING_KEY,
-                    event
-            );
-
-            log.info("Welcome email event published for user: {}", user.getUsername());
-        } catch (Exception e) {
-            log.error("Failed to publish welcome email event for user: {}", user.getUsername(), e);
-            throw new RuntimeException("Failed to publish welcome email event", e);
-        }
+        publishEvent(user, WELCOME_EMAIL_TOPIC, "WELCOME_EMAIL");
     }
 
     @Transactional
     public void publishWelcomeCouponEvent(User user) {
+        publishEvent(user, WELCOME_COUPON_TOPIC, "WELCOME_COUPON");
+    }
+
+    private void publishEvent(User user, String topic, String eventType) {
         try {
             SignupEvent event = createSignupEvent(user);
             String payload = objectMapper.writeValueAsString(event);
 
             // Save event to database
             MessageQueueEvent messageQueueEvent = MessageQueueEvent.builder()
-                    .eventType("WELCOME_COUPON")
+                    .eventType(eventType)
                     .payload(payload)
                     .status("PUBLISHED")
                     .createdAt(LocalDateTime.now())
                     .retryCount(0)
                     .maxRetries(3)
                     .build();
-
             messageQueueEventRepository.save(messageQueueEvent);
 
-            // Publish event to RabbitMQ
-            rabbitTemplate.convertAndSend(
-                    RabbitMQConfig.SIGNUP_EXCHANGE,
-                    RabbitMQConfig.WELCOME_COUPON_ROUTING_KEY,
-                    event
-            );
+            // Publish to Kafka
+            kafkaTemplate.send(topic, payload);
 
-            log.info("Welcome coupon event published for user: {}", user.getUsername());
+            log.info("{} event published to Kafka for user: {}", eventType, user.getUsername());
         } catch (Exception e) {
-            log.error("Failed to publish welcome coupon event for user: {}", user.getUsername(), e);
-            throw new RuntimeException("Failed to publish welcome coupon event", e);
+            log.error("Failed to publish {} event for user: {}", eventType, user.getUsername(), e);
+            throw new RuntimeException("Failed to publish Kafka event", e);
         }
     }
 

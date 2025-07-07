@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class SignupService {
     private final UserRepository userRepository;
-    private final EventPublisherService eventPublisherService;
 
     @Transactional
     public SignupResponse signup(SignupRequest signupRequest) {
@@ -41,13 +40,8 @@ public class SignupService {
         User createdUser = User.create(signupRequest);
         userRepository.save(createdUser);
 
-        // 회원가입 축하 메일 이벤트 발행
-        log.info("Publishing welcome email event for user: {}", createdUser.getUsername());
-        eventPublisherService.publishWelcomeEmailEvent(createdUser);
-
-        // 회원가입 쿠폰 발행 이벤트 발행
-        log.info("Publishing welcome coupon event for user: {}", createdUser.getUsername());
-        eventPublisherService.publishWelcomeCouponEvent(createdUser);
+        // Debezium will detect this database change and trigger the appropriate actions
+        log.info("User created and saved: {}", createdUser.getUsername());
 
         return SignupResponse.builder()
                 .username(createdUser.getUsername())
