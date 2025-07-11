@@ -40,7 +40,6 @@ public class SignupService {
         User createdUser = User.create(signupRequest);
         userRepository.save(createdUser);
 
-        // Debezium will detect this database change and trigger the appropriate actions
         log.info("User created and saved: {}", createdUser.getUsername());
 
         return SignupResponse.builder()

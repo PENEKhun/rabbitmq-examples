@@ -30,17 +30,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // debezium
-    implementation "org.springframework.integration:spring-integration-debezium:6.5.0"
-    implementation "io.debezium:debezium-embedded:2.5.3.Final"
-    implementation "io.debezium:debezium-api:2.5.3.Final"
-    implementation "io.debezium:debezium-connector-mysql:2.5.3.Final"
 }
 
 tasks.named('test') {
