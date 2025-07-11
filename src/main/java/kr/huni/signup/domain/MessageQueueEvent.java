@@ -1,6 +1,7 @@
 package kr.huni.signup.domain;
 
 import jakarta.persistence.*;
+import kr.huni.signup.enums.MessageQueueStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -29,7 +30,7 @@ public class MessageQueueEvent {
     private String payload;
 
     @Column(length = 20)
-    private String status;
+    private MessageQueueStatus status;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
